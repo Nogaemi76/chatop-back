@@ -1,6 +1,9 @@
 package com.openclassrooms.chatopback.controllers;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.openclassrooms.chatopback.dtos.LoginUserDto;
 import com.openclassrooms.chatopback.dtos.RegisterUserDto;
 import com.openclassrooms.chatopback.entities.User;
-import com.openclassrooms.chatopback.responses.LoginResponse;
+import com.openclassrooms.chatopback.responses.TokenResponse;
+import com.openclassrooms.chatopback.responses.UserResponse;
 import com.openclassrooms.chatopback.services.AuthenticationService;
 import com.openclassrooms.chatopback.services.JwtService;
 
@@ -28,25 +32,43 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
+	public ResponseEntity<TokenResponse> register(@RequestBody RegisterUserDto registerUserDto) {
 
 		User registeredUser = authenticationService.register(registerUserDto);
 
-		// log.info("registereduser auth controller");
-		return ResponseEntity.ok(registeredUser);
+		String jwtToken = jwtService.generateToken(registeredUser);
+
+		TokenResponse tokenResponse = new TokenResponse();
+		tokenResponse.setToken(jwtToken);
+
+		return ResponseEntity.ok(tokenResponse);
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
+	public ResponseEntity<TokenResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
 		User authenticatedUser = authenticationService.authenticate(loginUserDto);
 
 		String jwtToken = jwtService.generateToken(authenticatedUser);
 
-		LoginResponse loginResponse = new LoginResponse();
-		loginResponse.setToken(jwtToken);
-		loginResponse.setExpiresIn(jwtService.getExpirationTime());
+		TokenResponse tokenResponse = new TokenResponse();
+		tokenResponse.setToken(jwtToken);
 
-		return ResponseEntity.ok(loginResponse);
+		return ResponseEntity.ok(tokenResponse);
 	}
 
+	@GetMapping("/me")
+	public ResponseEntity<UserResponse> authenticatedUser() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		User currentUser = (User) authentication.getPrincipal();
+
+		UserResponse userResponse = new UserResponse();
+		userResponse.setId(currentUser.getId());
+		userResponse.setName(currentUser.getName());
+		userResponse.setEmail(currentUser.getEmail());
+		userResponse.setCreatedAt(currentUser.getCreatedAt());
+		userResponse.setUpdatedAt(currentUser.getCreatedAt());
+
+		return ResponseEntity.ok(userResponse);
+	}
 }
