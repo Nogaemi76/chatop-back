@@ -1,5 +1,7 @@
 package com.openclassrooms.chatopback.controllers;
 
+import java.text.SimpleDateFormat;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,6 +58,7 @@ public class AuthenticationController {
 		return ResponseEntity.ok(tokenResponse);
 	}
 
+	// TODO Implement userDto
 	@GetMapping("/me")
 	public ResponseEntity<UserResponse> authenticatedUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -66,8 +69,14 @@ public class AuthenticationController {
 		userResponse.setId(currentUser.getId());
 		userResponse.setName(currentUser.getName());
 		userResponse.setEmail(currentUser.getEmail());
-		userResponse.setCreatedAt(currentUser.getCreatedAt());
-		userResponse.setUpdatedAt(currentUser.getCreatedAt());
+
+		// userResponse.setCreatedAt(currentUser.getCreatedAt());
+		// userResponse.setUpdatedAt(currentUser.getUpdatedAt());
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+		String createdDatedFormatted = simpleDateFormat.format(currentUser.getCreatedAt());
+		String updatedDatedFormatted = simpleDateFormat.format(currentUser.getUpdatedAt());
+		userResponse.setCreatedAt(createdDatedFormatted);
+		userResponse.setUpdatedAt(updatedDatedFormatted);
 
 		return ResponseEntity.ok(userResponse);
 	}
