@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.openclassrooms.chatopback.entities.User;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, Integer> {
+public interface UserRepository extends CrudRepository<User, Long> {
 	Optional<User> findByEmail(String email);
 }
