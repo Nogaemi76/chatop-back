@@ -10,8 +10,11 @@ import com.openclassrooms.chatopback.dtos.RegisterUserDto;
 import com.openclassrooms.chatopback.entities.User;
 import com.openclassrooms.chatopback.repositories.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 //@Log
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
 
 	private final UserRepository userRepository;
@@ -20,13 +23,6 @@ public class AuthenticationService {
 
 	private final AuthenticationManager authenticationManager;
 
-	public AuthenticationService(UserRepository userRepository, AuthenticationManager authenticationManager,
-			PasswordEncoder passwordEncoder) {
-		this.authenticationManager = authenticationManager;
-		this.userRepository = userRepository;
-		this.passwordEncoder = passwordEncoder;
-	}
-
 	public User register(RegisterUserDto registerDto) {
 		User user = new User();
 
@@ -34,8 +30,6 @@ public class AuthenticationService {
 		user.setEmail(registerDto.getEmail());
 		user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
-		// log.info("auth service");
-		// log.info(user.getEmail());
 		return userRepository.save(user);
 
 	}
