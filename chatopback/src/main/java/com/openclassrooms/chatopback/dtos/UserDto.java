@@ -1,6 +1,6 @@
 package com.openclassrooms.chatopback.dtos;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import lombok.Data;
 
@@ -15,7 +15,7 @@ public class UserDto {
 
 	private String password;
 
-	private Date createdAt;
+	private LocalDate createdAt;
 
-	private Date updatedAt;
+	private LocalDate updatedAt;
 }

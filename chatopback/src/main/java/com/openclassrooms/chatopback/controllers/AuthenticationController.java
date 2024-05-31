@@ -21,9 +21,12 @@ import com.openclassrooms.chatopback.responses.UserResponse;
 import com.openclassrooms.chatopback.services.AuthenticationService;
 import com.openclassrooms.chatopback.services.JwtService;
 
+import lombok.RequiredArgsConstructor;
+
 //@Log
 @RequestMapping("/api/auth")
 @RestController
+@RequiredArgsConstructor
 public class AuthenticationController {
 
 	private final JwtService jwtService;
@@ -31,13 +34,6 @@ public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 
 	private final ModelMapper modelMapper;
-
-	public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService,
-			ModelMapper modelMapper) {
-		this.jwtService = jwtService;
-		this.authenticationService = authenticationService;
-		this.modelMapper = new ModelMapper();
-	}
 
 	@PostMapping("/register")
 	public ResponseEntity<TokenResponse> register(@RequestBody RegisterUserDto registerUserDto) {
@@ -64,30 +60,20 @@ public class AuthenticationController {
 		return ResponseEntity.ok(tokenResponse);
 	}
 
-	// TODO Implement userDto
 	@GetMapping("/me")
 	public ResponseEntity<UserResponse> authenticatedUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		User currentUser = (User) authentication.getPrincipal();
-		UserDto currentUserDto = convertToDto(currentUser);
+		UserDto currentUserDto = modelMapper.map(currentUser, UserDto.class);
 
 		UserResponse userResponse = new UserResponse();
-		// userResponse.setId(currentUser.getId());
-		// userResponse.setName(currentUser.getName());
-		// userResponse.setEmail(currentUser.getEmail());
 		userResponse.setId(currentUserDto.getId());
 		userResponse.setName(currentUserDto.getName());
 		userResponse.setEmail(currentUserDto.getEmail());
 
-		// userResponse.setCreatedAt(currentUser.getCreatedAt());
-		// userResponse.setUpdatedAt(currentUser.getUpdatedAt());
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
-		// String createdDatedFormatted =
-		// simpleDateFormat.format(currentUser.getCreatedAt());
-		// String updatedDatedFormatted =
-		// simpleDateFormat.format(currentUser.getUpdatedAt());
 		String createdDatedFormatted = simpleDateFormat.format(currentUserDto.getCreatedAt());
 		String updatedDatedFormatted = simpleDateFormat.format(currentUserDto.getUpdatedAt());
 
@@ -95,10 +81,5 @@ public class AuthenticationController {
 		userResponse.setUpdatedAt(updatedDatedFormatted);
 
 		return ResponseEntity.ok(userResponse);
-	}
-
-	private UserDto convertToDto(User user) {
-		UserDto userDto = modelMapper.map(user, UserDto.class);
-		return userDto;
 	}
 }

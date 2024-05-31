@@ -1,7 +1,7 @@
 package com.openclassrooms.chatopback.entities;
 
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -39,11 +39,13 @@ public class User implements UserDetails {
 
 	@CreationTimestamp
 	@Column(updatable = false, name = "created_at")
-	private Date createdAt;
+	// private Date createdAt;
+	private LocalDate createdAt;
 
 	@UpdateTimestamp
 	@Column(name = "updated_at")
-	private Date updatedAt;
+	private LocalDate updatedAt;
+	// private Date updatedAt;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
