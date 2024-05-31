@@ -1,6 +1,6 @@
 package com.openclassrooms.chatopback.controllers;
 
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -72,10 +72,9 @@ public class AuthenticationController {
 		userResponse.setName(currentUserDto.getName());
 		userResponse.setEmail(currentUserDto.getEmail());
 
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-
-		String createdDatedFormatted = simpleDateFormat.format(currentUserDto.getCreatedAt());
-		String updatedDatedFormatted = simpleDateFormat.format(currentUserDto.getUpdatedAt());
+		DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		String createdDatedFormatted = currentUserDto.getCreatedAt().format(pattern);
+		String updatedDatedFormatted = currentUserDto.getUpdatedAt().format(pattern);
 
 		userResponse.setCreatedAt(createdDatedFormatted);
 		userResponse.setUpdatedAt(updatedDatedFormatted);
