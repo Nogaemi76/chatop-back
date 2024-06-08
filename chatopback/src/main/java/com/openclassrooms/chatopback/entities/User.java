@@ -40,12 +40,11 @@ public class User implements UserDetails {
 	@CreationTimestamp
 	@Column(updatable = false, name = "created_at")
 	// private Date createdAt;
-	private LocalDate createdAt;
+	private LocalDate created_at;
 
 	@UpdateTimestamp
 	@Column(name = "updated_at")
-	private LocalDate updatedAt;
-	// private Date updatedAt;
+	private LocalDate updated_at;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

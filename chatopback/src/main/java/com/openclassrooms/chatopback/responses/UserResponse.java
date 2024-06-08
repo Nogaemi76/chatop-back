@@ -1,5 +1,7 @@
 package com.openclassrooms.chatopback.responses;
 
+import java.time.LocalDate;
+
 import lombok.Data;
 
 @Data
@@ -11,7 +13,9 @@ public class UserResponse {
 
 	private String email;
 
-	private String createdAt;
+	// private String createdAt;
+	private LocalDate created_at;
 
-	private String updatedAt;
+	// private String updatedAt;
+	private LocalDate updated_at;
 }

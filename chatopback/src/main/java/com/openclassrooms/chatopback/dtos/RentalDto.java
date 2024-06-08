@@ -22,7 +22,7 @@ public class RentalDto {
 
 	private Long owner_id;
 
-	private LocalDate createdAt;
+	private LocalDate created_at;
 
-	private LocalDate updatedAt;
+	private LocalDate updated_at;
 }

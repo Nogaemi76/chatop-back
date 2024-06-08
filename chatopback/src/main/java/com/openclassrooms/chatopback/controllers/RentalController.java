@@ -32,7 +32,7 @@ public class RentalController {
 
 	private final ModelMapper modelMapper;
 
-	@PostMapping("/")
+	@PostMapping
 	ResponseEntity<String> addRental(@RequestBody RentalDto rentalDto) {
 
 		Rental rental = convertToEntity(rentalDto);
@@ -42,13 +42,20 @@ public class RentalController {
 		return new ResponseEntity<String>("{\"message\":\"Rental created !\"}", HttpStatus.OK);
 	}
 
-	@GetMapping("/")
+	@GetMapping
 	public List<RentalDto> getAllRentals() {
 		List<Rental> rentals = rentalService.getRentals();
 
 		List<RentalDto> rentalDtos = rentals.stream().map(this::convertToDto).collect(Collectors.toList());
 
-		return rentalDtos;
+		// return rentalDtos;
+
+		if (rentalDtos.isEmpty()) {
+			return null;
+		} else {
+			return rentalDtos;
+		}
+
 	}
 
 	@GetMapping("/{id}")
@@ -90,7 +97,7 @@ public class RentalController {
 				currentRental.setDescription(description);
 			}
 
-			currentRental.setUpdatedAt(LocalDate.now());
+			currentRental.setUpdated_at(LocalDate.now());
 
 			rentalService.saveRental(currentRental);
 

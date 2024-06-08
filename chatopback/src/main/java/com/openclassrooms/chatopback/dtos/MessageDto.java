@@ -15,7 +15,7 @@ public class MessageDto {
 
 	private String message;
 
-	private LocalDate createdAt;
+	private LocalDate created_at;
 
-	private LocalDate updatedAt;
+	private LocalDate updated_at;
 }

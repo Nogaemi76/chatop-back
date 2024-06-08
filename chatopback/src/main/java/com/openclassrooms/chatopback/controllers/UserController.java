@@ -1,6 +1,5 @@
 package com.openclassrooms.chatopback.controllers;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -37,12 +36,18 @@ public class UserController {
 		userResponse.setName(retrievedUserDto.getName());
 		userResponse.setEmail(retrievedUserDto.getEmail());
 
-		DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-		String createdDatedFormatted = retrievedUserDto.getCreatedAt().format(pattern);
-		String updatedDatedFormatted = retrievedUserDto.getUpdatedAt().format(pattern);
+		/*
+		 * DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd"); String
+		 * createdDatedFormatted = retrievedUserDto.getCreatedAt().format(pattern);
+		 * String updatedDatedFormatted =
+		 * retrievedUserDto.getUpdatedAt().format(pattern);
+		 * 
+		 * userResponse.setCreatedAt(createdDatedFormatted);
+		 * userResponse.setUpdatedAt(updatedDatedFormatted);
+		 */
 
-		userResponse.setCreatedAt(createdDatedFormatted);
-		userResponse.setUpdatedAt(updatedDatedFormatted);
+		userResponse.setCreated_at(retrievedUserDto.getCreated_at());
+		userResponse.setUpdated_at(retrievedUserDto.getUpdated_at());
 
 		return ResponseEntity.ok(userResponse);
 	}

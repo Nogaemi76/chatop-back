@@ -32,9 +32,9 @@ public class Message {
 
 	@CreationTimestamp
 	@Column(name = "created_at")
-	private LocalDate createdAt;
+	private LocalDate created_at;
 
 	@UpdateTimestamp
 	@Column(name = "updated_at")
-	private LocalDate updatedAt;
+	private LocalDate updated_at;
 }
