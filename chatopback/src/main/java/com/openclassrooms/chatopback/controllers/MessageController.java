@@ -23,7 +23,7 @@ public class MessageController {
 
 	private final ModelMapper modelMapper;
 
-	@PostMapping("/")
+	@PostMapping
 	ResponseEntity<String> addMessage(@RequestBody MessageDto messageDto) {
 
 		Message message = modelMapper.map(messageDto, Message.class);
