@@ -2,6 +2,8 @@ package com.openclassrooms.chatopback.controllers;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +25,7 @@ import com.openclassrooms.chatopback.services.RentalService;
 
 import lombok.RequiredArgsConstructor;
 
+//@Log
 @RequestMapping("/api/rentals")
 @RestController
 @RequiredArgsConstructor
@@ -38,24 +41,25 @@ public class RentalController {
 		Rental rental = convertToEntity(rentalDto);
 		rentalService.saveRental(rental);
 
-		// TODO FIX JSON REPONSE
 		return new ResponseEntity<String>("{\"message\":\"Rental created !\"}", HttpStatus.OK);
 	}
 
 	@GetMapping
-	public List<RentalDto> getAllRentals() {
+	public HashMap<String, ArrayList<RentalDto>> getAllRentals() {
 		List<Rental> rentals = rentalService.getRentals();
 
 		List<RentalDto> rentalDtos = rentals.stream().map(this::convertToDto).collect(Collectors.toList());
 
-		// return rentalDtos;
-
 		if (rentalDtos.isEmpty()) {
 			return null;
 		} else {
-			return rentalDtos;
-		}
 
+			// log.info(rentalDtos.getClass().getSimpleName());
+
+			HashMap<String, ArrayList<RentalDto>> allRentals = new HashMap<String, ArrayList<RentalDto>>();
+			allRentals.put("rentals", (ArrayList<RentalDto>) rentalDtos);
+			return allRentals;
+		}
 	}
 
 	@GetMapping("/{id}")
@@ -101,12 +105,10 @@ public class RentalController {
 
 			rentalService.saveRental(currentRental);
 
-			// TODO FIX JSON REPONSE
 			return new ResponseEntity<String>("{\"message\":\"Rental Updated !\"}", HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-
 	}
 
 	private RentalDto convertToDto(Rental rental) {

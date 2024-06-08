@@ -29,7 +29,6 @@ public class MessageController {
 		Message message = modelMapper.map(messageDto, Message.class);
 		messageService.saveMessage(message);
 
-		// TODO FIX JSON REPONSE
 		return new ResponseEntity<String>("{\"message\":\"Message sent with success\"}", HttpStatus.OK);
 	}
 }
