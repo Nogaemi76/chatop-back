@@ -2,9 +2,9 @@ package com.openclassrooms.chatopback.controllers;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,7 +45,7 @@ public class RentalController {
 	}
 
 	@GetMapping
-	public HashMap<String, ArrayList<RentalDto>> getAllRentals() {
+	public Map<String, List<RentalDto>> getAllRentals() {
 		List<Rental> rentals = rentalService.getRentals();
 
 		List<RentalDto> rentalDtos = rentals.stream().map(this::convertToDto).collect(Collectors.toList());
@@ -56,8 +56,8 @@ public class RentalController {
 
 			// log.info(rentalDtos.getClass().getSimpleName());
 
-			HashMap<String, ArrayList<RentalDto>> allRentals = new HashMap<String, ArrayList<RentalDto>>();
-			allRentals.put("rentals", (ArrayList<RentalDto>) rentalDtos);
+			Map<String, List<RentalDto>> allRentals = new HashMap<String, List<RentalDto>>();
+			allRentals.put("rentals", rentalDtos);
 			return allRentals;
 		}
 	}
