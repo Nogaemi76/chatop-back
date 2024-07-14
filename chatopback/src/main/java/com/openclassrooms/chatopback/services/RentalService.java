@@ -31,17 +31,7 @@ public class RentalService {
 		return savedRental;
 	}
 
-	/*
-	 * public Rental updateRental(Rental rental) { Rental existingRental =
-	 * rentalRepository.findById(rental.getId()).get();
-	 * 
-	 * existingRental.setName(rental.getName());
-	 * existingRental.setPrice(rental.getPrice());
-	 * existingRental.setSurface(rental.getSurface());
-	 * existingRental.setDescription(rental.getDescription());
-	 * 
-	 * Rental updatedRental = rentalRepository.save(existingRental);
-	 * 
-	 * return updatedRental; }
-	 */
+	public Optional<Rental> getRentalByPictureName(String picture_name) {
+		return rentalRepository.findByPictureName(picture_name);
+	}
 }

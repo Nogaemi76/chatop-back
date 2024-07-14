@@ -1,14 +1,12 @@
-package com.openclassrooms.chatopback.dtos;
+package com.openclassrooms.chatopback.responses;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.Data;
 
 @Data
-public class RentalDto {
+public class RentalResponse {
 
 	private long id;
 
@@ -18,9 +16,7 @@ public class RentalDto {
 
 	private BigDecimal price;
 
-	private String picture_name;
-
-	private MultipartFile picture;
+	private String picture;
 
 	private String description;
 

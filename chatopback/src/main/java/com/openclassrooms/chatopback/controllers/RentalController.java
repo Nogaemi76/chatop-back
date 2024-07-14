@@ -1,27 +1,34 @@
 package com.openclassrooms.chatopback.controllers;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.openclassrooms.chatopback.dtos.RentalDto;
 import com.openclassrooms.chatopback.entities.Rental;
+import com.openclassrooms.chatopback.entities.User;
+import com.openclassrooms.chatopback.responses.RentalResponse;
 import com.openclassrooms.chatopback.services.RentalService;
+import com.openclassrooms.chatopback.services.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,31 +42,63 @@ public class RentalController {
 
 	private final ModelMapper modelMapper;
 
+	private final UserService userService;
+
 	@PostMapping
-	ResponseEntity<String> addRental(@RequestBody RentalDto rentalDto) {
+	ResponseEntity<String> addRental(@ModelAttribute RentalDto rentalDto) {
 
 		Rental rental = convertToEntity(rentalDto);
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String userName = authentication.getName();
+		// log.info(authentication.getName());
+
+		Optional<User> user = userService.getUserByEmail(userName);
+		Long userId = user.get().getId();
+		// log.info(user.toString());
+		rental.setOwner_id(userId);
+
+		UUID uuid = UUID.randomUUID();
+		// log.info(rentalDto.getPicture().getOriginalFilename());
+		// log.info(rentalDto.getPicture().getContentType().substring(6));
+
+		try {
+			rental.setPicture(rentalDto.getPicture().getBytes());
+			rental.setPictureName(uuid + "." + rentalDto.getPicture().getContentType().substring(6));
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		rentalService.saveRental(rental);
 
 		return new ResponseEntity<String>("{\"message\":\"Rental created !\"}", HttpStatus.OK);
 	}
 
 	@GetMapping
-	public Map<String, List<RentalDto>> getAllRentals() {
+	public Map<String, List<RentalResponse>> getAllRentals() {
 		List<Rental> rentals = rentalService.getRentals();
 
-		List<RentalDto> rentalDtos = rentals.stream().map(this::convertToDto).collect(Collectors.toList());
+		List<RentalResponse> rentalResponses = rentals.stream().map(this::convertToRentalResponse)
+				.collect(Collectors.toList());
 
-		if (rentalDtos.isEmpty()) {
+		if (rentalResponses.isEmpty()) {
 			return null;
 		} else {
 
 			// log.info(rentalDtos.getClass().getSimpleName());
 
-			Map<String, List<RentalDto>> allRentals = new HashMap<String, List<RentalDto>>();
-			allRentals.put("rentals", rentalDtos);
+			Map<String, List<RentalResponse>> allRentals = new HashMap<String, List<RentalResponse>>();
+			allRentals.put("rentals", rentalResponses);
 			return allRentals;
 		}
+	}
+
+	@GetMapping("/image/{picture}")
+	public byte[] getPicture(@PathVariable("picture") String picture) {
+		Optional<Rental> rental = rentalService.getRentalByPictureName(picture);
+		byte[] image = rental.get().getPicture();
+		return image;
 	}
 
 	@GetMapping("/{id}")
@@ -72,7 +111,7 @@ public class RentalController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<String> updateRental(@PathVariable("id") final Long id, @RequestBody RentalDto rentalDto) {
+	public ResponseEntity<String> updateRental(@PathVariable("id") final Long id, @ModelAttribute RentalDto rentalDto) {
 
 		Rental rental = convertToEntity(rentalDto);
 
@@ -119,5 +158,12 @@ public class RentalController {
 	private Rental convertToEntity(RentalDto rentalDto) {
 		Rental rental = modelMapper.map(rentalDto, Rental.class);
 		return rental;
+	}
+
+	private RentalResponse convertToRentalResponse(Rental rental) {
+		String urlPath = "http://localhost:4200/api/rentals/image/";
+		RentalResponse rentalResponse = modelMapper.map(rental, RentalResponse.class);
+		rentalResponse.setPicture(urlPath + rental.getPictureName());
+		return rentalResponse;
 	}
 }

@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -30,6 +31,13 @@ public class Rental {
 	private BigDecimal price;
 
 	private String description;
+
+	@Column(name = "picture_name")
+	private String pictureName;
+
+	@Lob
+	@Column(name = "picture")
+	private byte[] picture;
 
 	@Column(name = "owner_id")
 	private Long owner_id;
