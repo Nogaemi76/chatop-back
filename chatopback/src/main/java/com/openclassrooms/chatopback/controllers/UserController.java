@@ -35,17 +35,6 @@ public class UserController {
 		userResponse.setId(retrievedUserDto.getId());
 		userResponse.setName(retrievedUserDto.getName());
 		userResponse.setEmail(retrievedUserDto.getEmail());
-
-		/*
-		 * DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd"); String
-		 * createdDatedFormatted = retrievedUserDto.getCreatedAt().format(pattern);
-		 * String updatedDatedFormatted =
-		 * retrievedUserDto.getUpdatedAt().format(pattern);
-		 * 
-		 * userResponse.setCreatedAt(createdDatedFormatted);
-		 * userResponse.setUpdatedAt(updatedDatedFormatted);
-		 */
-
 		userResponse.setCreated_at(retrievedUserDto.getCreated_at());
 		userResponse.setUpdated_at(retrievedUserDto.getUpdated_at());
 

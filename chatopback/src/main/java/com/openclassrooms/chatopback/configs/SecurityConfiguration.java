@@ -35,10 +35,7 @@ public class SecurityConfiguration {
 						.permitAll().anyRequest().authenticated())
 				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authenticationProvider(authenticationProvider)
-				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-				// .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-				// .httpBasic(Customizer.withDefaults())
-				.build();
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
 	}
 
 	@Bean

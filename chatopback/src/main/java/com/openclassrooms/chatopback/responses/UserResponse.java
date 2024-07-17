@@ -13,9 +13,7 @@ public class UserResponse {
 
 	private String email;
 
-	// private String createdAt;
 	private LocalDate created_at;
 
-	// private String updatedAt;
 	private LocalDate updated_at;
 }

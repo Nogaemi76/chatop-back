@@ -39,7 +39,6 @@ public class User implements UserDetails {
 
 	@CreationTimestamp
 	@Column(updatable = false, name = "created_at")
-	// private Date createdAt;
 	private LocalDate created_at;
 
 	@UpdateTimestamp
