@@ -44,6 +44,8 @@ public class RentalController {
 
 	private final UserService userService;
 
+	private final String urlPath = "http://localhost:4200/api/rentals/image/";
+
 	@PostMapping
 	ResponseEntity<String> addRental(@ModelAttribute RentalDto rentalDto) {
 
@@ -51,16 +53,12 @@ public class RentalController {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String userName = authentication.getName();
-		// log.info(authentication.getName());
 
 		Optional<User> user = userService.getUserByEmail(userName);
 		Long userId = user.get().getId();
-		// log.info(user.toString());
 		rental.setOwner_id(userId);
 
 		UUID uuid = UUID.randomUUID();
-		// log.info(rentalDto.getPicture().getOriginalFilename());
-		// log.info(rentalDto.getPicture().getContentType().substring(6));
 
 		try {
 			rental.setPicture(rentalDto.getPicture().getBytes());
@@ -84,10 +82,8 @@ public class RentalController {
 
 		if (rentalResponses.isEmpty()) {
 			return null;
+
 		} else {
-
-			// log.info(rentalDtos.getClass().getSimpleName());
-
 			Map<String, List<RentalResponse>> allRentals = new HashMap<String, List<RentalResponse>>();
 			allRentals.put("rentals", rentalResponses);
 			return allRentals;
@@ -102,12 +98,16 @@ public class RentalController {
 	}
 
 	@GetMapping("/{id}")
-	public RentalDto getRentalById(@PathVariable("id") final Long id) {
+	public RentalResponse getRentalById(@PathVariable("id") final Long id) {
 		Optional<Rental> retrievedRental = rentalService.getRentalById(id);
 
-		RentalDto retrievedRentalDto = convertToDto(retrievedRental.get());
-
-		return retrievedRentalDto;
+		if (retrievedRental.isEmpty()) {
+			return null;
+		} else {
+			RentalResponse rentalResponse = modelMapper.map(retrievedRental, RentalResponse.class);
+			rentalResponse.setPicture(urlPath + retrievedRental.get().getPictureName());
+			return rentalResponse;
+		}
 	}
 
 	@PutMapping("/{id}")
@@ -150,18 +150,12 @@ public class RentalController {
 		}
 	}
 
-	private RentalDto convertToDto(Rental rental) {
-		RentalDto rentalDto = modelMapper.map(rental, RentalDto.class);
-		return rentalDto;
-	}
-
 	private Rental convertToEntity(RentalDto rentalDto) {
 		Rental rental = modelMapper.map(rentalDto, Rental.class);
 		return rental;
 	}
 
 	private RentalResponse convertToRentalResponse(Rental rental) {
-		String urlPath = "http://localhost:4200/api/rentals/image/";
 		RentalResponse rentalResponse = modelMapper.map(rental, RentalResponse.class);
 		rentalResponse.setPicture(urlPath + rental.getPictureName());
 		return rentalResponse;
