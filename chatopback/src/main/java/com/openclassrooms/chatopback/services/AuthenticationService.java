@@ -36,9 +36,18 @@ public class AuthenticationService {
 
 	public User authenticate(LoginUserDto loginDto) {
 
-		authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getLogin(), loginDto.getPassword()));
+		/*
+		 * authenticationManager .authenticate(new
+		 * UsernamePasswordAuthenticationToken(loginDto.getEmail(),
+		 * loginDto.getPassword()));
+		 * 
+		 * return userRepository.findByEmail(loginDto.getEmail()).orElseThrow();
+		 */
 
-		return userRepository.findByEmail(loginDto.getLogin()).orElseThrow();
+		authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+
+		return userRepository.findByEmail(loginDto.getEmail()).orElseThrow();
+
 	}
 }

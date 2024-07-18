@@ -1,5 +1,7 @@
 package com.openclassrooms.chatopback.controllers;
 
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,6 +20,7 @@ import com.openclassrooms.chatopback.responses.TokenResponse;
 import com.openclassrooms.chatopback.responses.UserResponse;
 import com.openclassrooms.chatopback.services.AuthenticationService;
 import com.openclassrooms.chatopback.services.JwtService;
+import com.openclassrooms.chatopback.services.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +35,8 @@ public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 
 	private final ModelMapper modelMapper;
+
+	private final UserService userService;
 
 	@PostMapping("/register")
 	public ResponseEntity<TokenResponse> register(@RequestBody RegisterUserDto registerUserDto) {
@@ -62,24 +67,16 @@ public class AuthenticationController {
 	public ResponseEntity<UserResponse> authenticatedUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		User currentUser = (User) authentication.getPrincipal();
+		String userName = authentication.getName();
+
+		Optional<User> currentUser = userService.getUserByEmail(userName);
+
 		UserDto currentUserDto = modelMapper.map(currentUser, UserDto.class);
 
 		UserResponse userResponse = new UserResponse();
 		userResponse.setId(currentUserDto.getId());
 		userResponse.setName(currentUserDto.getName());
 		userResponse.setEmail(currentUserDto.getEmail());
-
-		/*
-		 * DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd"); String
-		 * createdDatedFormatted = currentUserDto.getCreatedAt().format(pattern); String
-		 * updatedDatedFormatted = currentUserDto.getUpdatedAt().format(pattern);
-		 */
-
-		/*
-		 * userResponse.setCreatedAt(createdDatedFormatted);
-		 * userResponse.setUpdatedAt(updatedDatedFormatted);
-		 */
 
 		userResponse.setCreated_at(currentUserDto.getCreated_at());
 		userResponse.setUpdated_at(currentUserDto.getUpdated_at());
