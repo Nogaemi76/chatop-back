@@ -23,18 +23,18 @@ public class Message {
 	private long id;
 
 	@Column(name = "rental_id")
-	private Long rental_id;
+	private Long rentalId;
 
 	@Column(name = "user_id")
-	private Long user_id;
+	private Long userId;
 
 	private String message;
 
 	@CreationTimestamp
 	@Column(name = "created_at")
-	private LocalDate created_at;
+	private LocalDate createdAt;
 
 	@UpdateTimestamp
 	@Column(name = "updated_at")
-	private LocalDate updated_at;
+	private LocalDate updatedAt;
 }

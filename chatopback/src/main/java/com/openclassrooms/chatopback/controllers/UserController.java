@@ -28,7 +28,11 @@ public class UserController {
 	@GetMapping("/{id}")
 	public ResponseEntity<UserResponse> getUserById(@PathVariable("id") final Long id) {
 		Optional<User> retrievedUser = userService.getUser(id);
+
 		UserDto retrievedUserDto = modelMapper.map(retrievedUser, UserDto.class);
+
+		retrievedUserDto.setCreated_at(retrievedUser.get().getCreatedAt());
+		retrievedUserDto.setUpdated_at(retrievedUser.get().getCreatedAt());
 
 		UserResponse userResponse = new UserResponse();
 

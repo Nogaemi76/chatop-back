@@ -56,7 +56,7 @@ public class RentalController {
 
 		Optional<User> user = userService.getUserByEmail(userName);
 		Long userId = user.get().getId();
-		rental.setOwner_id(userId);
+		rental.setOwnerId(userId);
 
 		UUID uuid = UUID.randomUUID();
 
@@ -68,6 +68,7 @@ public class RentalController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		rentalService.saveRental(rental);
 
 		return new ResponseEntity<String>("{\"message\":\"Rental created !\"}", HttpStatus.OK);
@@ -77,7 +78,9 @@ public class RentalController {
 	public Map<String, List<RentalResponse>> getAllRentals() {
 		List<Rental> rentals = rentalService.getRentals();
 
-		List<RentalResponse> rentalResponses = rentals.stream().map(this::convertToRentalResponse)
+		List<RentalDto> rentalDtos = rentals.stream().map(this::convertToDto).collect(Collectors.toList());
+
+		List<RentalResponse> rentalResponses = rentalDtos.stream().map(this::convertToRentalResponse)
 				.collect(Collectors.toList());
 
 		if (rentalResponses.isEmpty()) {
@@ -92,8 +95,10 @@ public class RentalController {
 
 	@GetMapping("/image/{picture}")
 	public byte[] getPicture(@PathVariable("picture") String picture) {
+
 		Optional<Rental> rental = rentalService.getRentalByPictureName(picture);
 		byte[] image = rental.get().getPicture();
+
 		return image;
 	}
 
@@ -102,10 +107,13 @@ public class RentalController {
 		Optional<Rental> retrievedRental = rentalService.getRentalById(id);
 
 		if (retrievedRental.isEmpty()) {
+
 			return null;
+
 		} else {
-			RentalResponse rentalResponse = modelMapper.map(retrievedRental, RentalResponse.class);
-			rentalResponse.setPicture(urlPath + retrievedRental.get().getPictureName());
+			RentalDto retrievedRentalDto = convertToDto(retrievedRental.get());
+			RentalResponse rentalResponse = convertToRentalResponse(retrievedRentalDto);
+
 			return rentalResponse;
 		}
 	}
@@ -140,7 +148,7 @@ public class RentalController {
 				currentRental.setDescription(description);
 			}
 
-			currentRental.setUpdated_at(LocalDate.now());
+			currentRental.setUpdatedAt(LocalDate.now());
 
 			rentalService.saveRental(currentRental);
 
@@ -151,13 +159,34 @@ public class RentalController {
 	}
 
 	private Rental convertToEntity(RentalDto rentalDto) {
+
 		Rental rental = modelMapper.map(rentalDto, Rental.class);
+
+		rental.setOwnerId(rentalDto.getOwner_id());
+		rental.setCreatedAt(rentalDto.getCreated_at());
+		rental.setUpdatedAt(rentalDto.getUpdated_at());
+
 		return rental;
 	}
 
-	private RentalResponse convertToRentalResponse(Rental rental) {
-		RentalResponse rentalResponse = modelMapper.map(rental, RentalResponse.class);
-		rentalResponse.setPicture(urlPath + rental.getPictureName());
+	private RentalDto convertToDto(Rental rental) {
+
+		RentalDto rentalDto = modelMapper.map(rental, RentalDto.class);
+
+		rentalDto.setOwner_id(rental.getOwnerId());
+		rentalDto.setPicture_name(rental.getPictureName());
+		rentalDto.setCreated_at(rental.getCreatedAt());
+		rentalDto.setUpdated_at(rental.getUpdatedAt());
+
+		return rentalDto;
+	}
+
+	private RentalResponse convertToRentalResponse(RentalDto rentalDto) {
+
+		RentalResponse rentalResponse = modelMapper.map(rentalDto, RentalResponse.class);
+
+		rentalResponse.setPicture(urlPath + rentalDto.getPicture_name());
+
 		return rentalResponse;
 	}
 }

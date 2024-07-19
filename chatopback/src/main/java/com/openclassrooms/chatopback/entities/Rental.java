@@ -40,14 +40,14 @@ public class Rental {
 	private byte[] picture;
 
 	@Column(name = "owner_id")
-	private Long owner_id;
+	private Long ownerId;
 
 	@CreationTimestamp
 	@Column(name = "created_at")
-	private LocalDate created_at;
+	private LocalDate createdAt;
 
 	@UpdateTimestamp
 	@Column(name = "updated_at")
-	private LocalDate updated_at;
+	private LocalDate updatedAt;
 
 }

@@ -83,6 +83,9 @@ public class AuthenticationController {
 
 		UserDto currentUserDto = modelMapper.map(currentUser, UserDto.class);
 
+		currentUserDto.setCreated_at(currentUser.get().getCreatedAt());
+		currentUserDto.setUpdated_at(currentUser.get().getUpdatedAt());
+
 		UserResponse userResponse = new UserResponse();
 		userResponse.setId(currentUserDto.getId());
 		userResponse.setName(currentUserDto.getName());
