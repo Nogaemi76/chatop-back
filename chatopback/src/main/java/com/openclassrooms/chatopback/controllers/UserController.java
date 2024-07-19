@@ -29,19 +29,32 @@ public class UserController {
 	public ResponseEntity<UserResponse> getUserById(@PathVariable("id") final Long id) {
 		Optional<User> retrievedUser = userService.getUser(id);
 
-		UserDto retrievedUserDto = modelMapper.map(retrievedUser, UserDto.class);
+		UserDto retrievedUserDto = convertToDto(retrievedUser);
 
-		retrievedUserDto.setCreated_at(retrievedUser.get().getCreatedAt());
-		retrievedUserDto.setUpdated_at(retrievedUser.get().getCreatedAt());
+		UserResponse retrievedUserResponse = convertToUserResponse(retrievedUserDto);
 
+		return ResponseEntity.ok(retrievedUserResponse);
+	}
+
+	private UserDto convertToDto(Optional<User> user) {
+
+		UserDto userDto = modelMapper.map(user, UserDto.class);
+
+		userDto.setCreated_at(user.get().getCreatedAt());
+		userDto.setUpdated_at(user.get().getUpdatedAt());
+
+		return userDto;
+	}
+
+	private UserResponse convertToUserResponse(UserDto userDto) {
 		UserResponse userResponse = new UserResponse();
 
-		userResponse.setId(retrievedUserDto.getId());
-		userResponse.setName(retrievedUserDto.getName());
-		userResponse.setEmail(retrievedUserDto.getEmail());
-		userResponse.setCreated_at(retrievedUserDto.getCreated_at());
-		userResponse.setUpdated_at(retrievedUserDto.getUpdated_at());
+		userResponse.setId(userDto.getId());
+		userResponse.setName(userDto.getName());
+		userResponse.setEmail(userDto.getEmail());
+		userResponse.setCreated_at(userDto.getCreated_at());
+		userResponse.setUpdated_at(userDto.getUpdated_at());
 
-		return ResponseEntity.ok(userResponse);
+		return userResponse;
 	}
 }

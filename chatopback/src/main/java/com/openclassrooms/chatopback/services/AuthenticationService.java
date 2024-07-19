@@ -5,8 +5,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.openclassrooms.chatopback.dtos.LoginUserDto;
-import com.openclassrooms.chatopback.dtos.RegisterUserDto;
 import com.openclassrooms.chatopback.entities.User;
 import com.openclassrooms.chatopback.repositories.UserRepository;
 
@@ -23,23 +21,22 @@ public class AuthenticationService {
 
 	private final AuthenticationManager authenticationManager;
 
-	public User register(RegisterUserDto registerDto) {
+	public User register(User registeredUser) {
 		User user = new User();
 
-		user.setName(registerDto.getName());
-		user.setEmail(registerDto.getEmail());
-		user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+		user.setName(registeredUser.getName());
+		user.setEmail(registeredUser.getEmail());
+		user.setPassword(passwordEncoder.encode(registeredUser.getPassword()));
 
 		return userRepository.save(user);
-
 	}
 
-	public User authenticate(LoginUserDto loginDto) {
+	public User authenticate(User loggedUser) {
 
 		authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+				.authenticate(new UsernamePasswordAuthenticationToken(loggedUser.getEmail(), loggedUser.getPassword()));
 
-		return userRepository.findByEmail(loginDto.getEmail()).orElseThrow();
+		return userRepository.findByEmail(loggedUser.getEmail()).orElseThrow();
 
 	}
 }

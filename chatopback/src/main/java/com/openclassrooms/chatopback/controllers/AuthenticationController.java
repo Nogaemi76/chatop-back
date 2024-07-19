@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.openclassrooms.chatopback.dtos.LoginUserDto;
-import com.openclassrooms.chatopback.dtos.RegisterUserDto;
 import com.openclassrooms.chatopback.dtos.UserDto;
 import com.openclassrooms.chatopback.entities.User;
 import com.openclassrooms.chatopback.responses.TokenResponse;
@@ -40,18 +38,20 @@ public class AuthenticationController {
 	private final UserService userService;
 
 	@PostMapping("/register")
-	public ResponseEntity<?> register(@RequestBody RegisterUserDto registerUserDto) {
+	public ResponseEntity<?> register(@RequestBody UserDto registeredUserDto) {
 
-		if (registerUserDto.getName() == null || registerUserDto.getName() == "" || registerUserDto.getEmail() == null
-				|| registerUserDto.getEmail() == "" || registerUserDto.getPassword() == null
-				|| registerUserDto.getPassword() == "") {
+		if (registeredUserDto.getName() == null || registeredUserDto.getName() == ""
+				|| registeredUserDto.getEmail() == null || registeredUserDto.getEmail() == ""
+				|| registeredUserDto.getPassword() == null || registeredUserDto.getPassword() == "") {
 
 			return new ResponseEntity<>("{}", HttpStatus.BAD_REQUEST);
 		}
 
-		User registeredUser = authenticationService.register(registerUserDto);
+		User registeredUser = convertToEntity(registeredUserDto);
 
-		String jwtToken = jwtService.generateToken(registeredUser);
+		User authenticatedUser = authenticationService.register(registeredUser);
+
+		String jwtToken = jwtService.generateToken(authenticatedUser);
 
 		TokenResponse tokenResponse = new TokenResponse();
 		tokenResponse.setToken(jwtToken);
@@ -61,9 +61,11 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> authenticate(@RequestBody LoginUserDto loginUserDto) {
+	public ResponseEntity<?> authenticate(@RequestBody UserDto loggedUserDto) {
 
-		User authenticatedUser = authenticationService.authenticate(loginUserDto);
+		User loggedUser = convertToEntity(loggedUserDto);
+
+		User authenticatedUser = authenticationService.authenticate(loggedUser);
 
 		String jwtToken = jwtService.generateToken(authenticatedUser);
 
@@ -81,19 +83,42 @@ public class AuthenticationController {
 
 		Optional<User> currentUser = userService.getUserByEmail(userName);
 
-		UserDto currentUserDto = modelMapper.map(currentUser, UserDto.class);
+		UserDto currentUserDto = convertToDto(currentUser);
 
-		currentUserDto.setCreated_at(currentUser.get().getCreatedAt());
-		currentUserDto.setUpdated_at(currentUser.get().getUpdatedAt());
+		UserResponse currentUserResponse = convertToUserResponse(currentUserDto);
 
+		return ResponseEntity.ok(currentUserResponse);
+	}
+
+	private User convertToEntity(UserDto userDto) {
+
+		User user = modelMapper.map(userDto, User.class);
+
+		user.setCreatedAt(userDto.getCreated_at());
+		user.setUpdatedAt(userDto.getUpdated_at());
+
+		return user;
+	}
+
+	private UserDto convertToDto(Optional<User> currentUser) {
+		UserDto userDto = modelMapper.map(currentUser, UserDto.class);
+
+		userDto.setCreated_at(currentUser.get().getCreatedAt());
+		userDto.setUpdated_at(currentUser.get().getUpdatedAt());
+
+		return userDto;
+	}
+
+	private UserResponse convertToUserResponse(UserDto userDto) {
 		UserResponse userResponse = new UserResponse();
-		userResponse.setId(currentUserDto.getId());
-		userResponse.setName(currentUserDto.getName());
-		userResponse.setEmail(currentUserDto.getEmail());
 
-		userResponse.setCreated_at(currentUserDto.getCreated_at());
-		userResponse.setUpdated_at(currentUserDto.getUpdated_at());
+		userResponse.setId(userDto.getId());
+		userResponse.setName(userDto.getName());
+		userResponse.setEmail(userDto.getEmail());
 
-		return ResponseEntity.ok(userResponse);
+		userResponse.setCreated_at(userDto.getCreated_at());
+		userResponse.setUpdated_at(userDto.getUpdated_at());
+
+		return userResponse;
 	}
 }
