@@ -3,6 +3,7 @@ package com.openclassrooms.chatopback.controllers;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,7 +40,14 @@ public class AuthenticationController {
 	private final UserService userService;
 
 	@PostMapping("/register")
-	public ResponseEntity<TokenResponse> register(@RequestBody RegisterUserDto registerUserDto) {
+	public ResponseEntity<?> register(@RequestBody RegisterUserDto registerUserDto) {
+
+		if (registerUserDto.getName() == null || registerUserDto.getName() == "" || registerUserDto.getEmail() == null
+				|| registerUserDto.getEmail() == "" || registerUserDto.getPassword() == null
+				|| registerUserDto.getPassword() == "") {
+
+			return new ResponseEntity<>("{}", HttpStatus.BAD_REQUEST);
+		}
 
 		User registeredUser = authenticationService.register(registerUserDto);
 
@@ -49,10 +57,12 @@ public class AuthenticationController {
 		tokenResponse.setToken(jwtToken);
 
 		return ResponseEntity.ok(tokenResponse);
+
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<TokenResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
+	public ResponseEntity<?> authenticate(@RequestBody LoginUserDto loginUserDto) {
+
 		User authenticatedUser = authenticationService.authenticate(loginUserDto);
 
 		String jwtToken = jwtService.generateToken(authenticatedUser);
