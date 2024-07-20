@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +23,9 @@ import com.openclassrooms.chatopback.services.JwtService;
 import com.openclassrooms.chatopback.services.UserService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 
-//@Log
+@Log
 @RequestMapping("/api/auth")
 @RestController
 @RequiredArgsConstructor
@@ -57,7 +59,6 @@ public class AuthenticationController {
 		tokenResponse.setToken(jwtToken);
 
 		return ResponseEntity.ok(tokenResponse);
-
 	}
 
 	@PostMapping("/login")
@@ -65,29 +66,45 @@ public class AuthenticationController {
 
 		User loggedUser = convertToEntity(loggedUserDto);
 
-		User authenticatedUser = authenticationService.authenticate(loggedUser);
+		try {
+			User authenticatedUser = authenticationService.authenticate(loggedUser);
+			String jwtToken = jwtService.generateToken(authenticatedUser);
 
-		String jwtToken = jwtService.generateToken(authenticatedUser);
+			TokenResponse tokenResponse = new TokenResponse();
+			tokenResponse.setToken(jwtToken);
 
-		TokenResponse tokenResponse = new TokenResponse();
-		tokenResponse.setToken(jwtToken);
+			return ResponseEntity.ok(tokenResponse);
 
-		return ResponseEntity.ok(tokenResponse);
+		} catch (BadCredentialsException e) {
+
+			log.info(e.getMessage());
+			String errorMessage = e.getMessage();
+
+			return new ResponseEntity<String>("{\"message\":\"" + errorMessage + "\"}", HttpStatus.UNAUTHORIZED);
+		}
 	}
 
 	@GetMapping("/me")
-	public ResponseEntity<UserResponse> authenticatedUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	public ResponseEntity<?> authenticatedUser() {
 
-		String userName = authentication.getName();
+		try {
 
-		Optional<User> currentUser = userService.getUserByEmail(userName);
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		UserDto currentUserDto = convertToDto(currentUser);
+			String userName = authentication.getName();
 
-		UserResponse currentUserResponse = convertToUserResponse(currentUserDto);
+			Optional<User> currentUser = userService.getUserByEmail(userName);
 
-		return ResponseEntity.ok(currentUserResponse);
+			UserDto currentUserDto = convertToDto(currentUser);
+
+			UserResponse currentUserResponse = convertToUserResponse(currentUserDto);
+
+			return ResponseEntity.ok(currentUserResponse);
+
+		} catch (Exception e) {
+
+			return new ResponseEntity<String>("{}", HttpStatus.UNAUTHORIZED);
+		}
 	}
 
 	private User convertToEntity(UserDto userDto) {
