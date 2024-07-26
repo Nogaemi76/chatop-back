@@ -32,7 +32,6 @@ import com.openclassrooms.chatopback.services.UserService;
 
 import lombok.RequiredArgsConstructor;
 
-//@Log
 @RequestMapping("/api/rentals")
 @RestController
 @RequiredArgsConstructor
@@ -52,6 +51,7 @@ public class RentalController {
 		Rental rental = convertToEntity(rentalDto);
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
 		String userName = authentication.getName();
 
 		Optional<User> user = userService.getUserByEmail(userName);
@@ -65,7 +65,7 @@ public class RentalController {
 			rental.setPictureName(uuid + "." + rentalDto.getPicture().getContentType().substring(6));
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
@@ -153,7 +153,9 @@ public class RentalController {
 			rentalService.saveRental(currentRental);
 
 			return new ResponseEntity<String>("{\"message\":\"Rental Updated !\"}", HttpStatus.OK);
+
 		} else {
+
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}

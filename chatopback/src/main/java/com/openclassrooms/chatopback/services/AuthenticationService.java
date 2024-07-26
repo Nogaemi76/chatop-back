@@ -10,7 +10,6 @@ import com.openclassrooms.chatopback.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
-//@Log
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {

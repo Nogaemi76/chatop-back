@@ -23,9 +23,7 @@ import com.openclassrooms.chatopback.services.JwtService;
 import com.openclassrooms.chatopback.services.UserService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 
-@Log
 @RequestMapping("/api/auth")
 @RestController
 @RequiredArgsConstructor
@@ -77,7 +75,6 @@ public class AuthenticationController {
 
 		} catch (BadCredentialsException e) {
 
-			log.info(e.getMessage());
 			String errorMessage = e.getMessage();
 
 			return new ResponseEntity<String>("{\"message\":\"" + errorMessage + "\"}", HttpStatus.UNAUTHORIZED);

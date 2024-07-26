@@ -14,7 +14,6 @@ import com.openclassrooms.chatopback.services.MessageService;
 
 import lombok.RequiredArgsConstructor;
 
-//@Log
 @RequestMapping("/api/messages")
 @RestController
 @RequiredArgsConstructor
