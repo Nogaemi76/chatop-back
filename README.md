@@ -53,6 +53,7 @@ Go inside folder
 > Run `mvn install`
 
 To launch the project
+
 Inside the project folder **src/main/java**, 
 in the package **com.openclassrooms.chatopback**,
 > Right-click on **ChatopbackApplication.java**
@@ -74,9 +75,13 @@ Server version: 8.0.X
 At the project's root,
 create file **env.properties** with following properties
 >DB_DATABASE=
+
 >DB_USER=
+
 >DB_PASSWORD=
+
 >SECURITY_JWT_SECRET_KEY=
+
 >SECURITY_JWT_EXPIRATION_TIME=3600000 (for example)
 
 ---
