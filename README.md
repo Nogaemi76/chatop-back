@@ -105,3 +105,8 @@ if (rental == undefined) {
 	this.router.navigate(['/rentals']);
 }
 ```
+
+---
+## Swagger
+Link to Swagger documentation
+>  http://localhost:3001/swagger-ui/index.html
